@@ -19,3 +19,27 @@ macro_rules! sequential {
         }
     };
 }
+
+#[macro_export]
+macro_rules! parallel {
+    ($($task:expr),+ $(,)?) => {{
+        move |input| {
+            use std::future::Future;
+            use std::pin::Pin;
+
+            // Capture des tâches dans un vecteur de futures boxées
+            let futs: Vec<Pin<Box<dyn Future<Output = Result<_, _>> + Send>>> = vec![
+                $(
+                    Box::pin(async move {
+                        $task.run(input).await
+                    }),
+                )+
+            ];
+
+            async move {
+                let results: Vec<_> = futures::future::join_all(futs).await;
+                results.into_iter().collect::<Result<Vec<_>, _>>()
+            }
+        }
+    }};
+}
