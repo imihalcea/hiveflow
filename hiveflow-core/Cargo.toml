@@ -1,8 +1,13 @@
 [package]
-name = "hiveflow"
+name = "hiveflow-core"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.44.2", features = ["full"] }
-async-trait = "0.1.75"
+hiveflow-macros = { path = "../hiveflow-macros" }
+tokio = { version = "1.46.1", features = ["full"] }
+async-trait = "0.1.88"
+
+
+[lib]
+proc-macro = false
