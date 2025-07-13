@@ -1,0 +1,9 @@
+[workspace]
+resolver = "1"
+
+members = [
+    "hiveflow-core",
+    "hiveflow-macros",
+    "examples/hiveflow-simple"
+]
+
