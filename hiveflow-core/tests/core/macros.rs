@@ -1,6 +1,4 @@
-use async_trait::async_trait;
 use hiveflow_core::core::task::Task;
-use std::error::Error;
 
 struct Add(pub i32);
 #[async_trait::async_trait]
@@ -28,9 +26,9 @@ impl Task<Vec<i32>, i32> for Sum {
 
 #[cfg(test)]
 mod sequential_test {
+    use crate::core::macros::{Add, Mul};
     use hiveflow_core::core::task::Task;
     use hiveflow_macros::sequential;
-    use crate::core::macros::{Add, Mul};
 
     #[tokio::test]
     async fn test_sequential_macro_explicit_type() {
@@ -62,10 +60,10 @@ mod parallel_test {
 
 #[cfg(test)]
 mod combine_sequential_and_parallel_test {
+    use crate::core::macros::{Add, Mul, Sum};
+    use hiveflow_core::core::task::Task;
     use hiveflow_macros::parallel;
     use hiveflow_macros::sequential;
-    use hiveflow_core::core::task::Task;
-    use crate::core::macros::{Add, Mul, Sum};
 
     #[tokio::test]
     async fn test_seq_par_seq() {
