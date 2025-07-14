@@ -7,7 +7,7 @@ mod flow;
 
 #[proc_macro]
 pub fn flow(input: TokenStream) -> TokenStream {
-    let parsed = parse_macro_input!(input as flow::parser::Flow);
+    let parsed = parse_macro_input!(input as flow::parser::FlowBlock);
     flow::generate::generate_flow(parsed).into()
 }
 
