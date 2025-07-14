@@ -36,14 +36,7 @@ pub fn generate_parallel(block: ParallelBlock) -> proc_macro2::TokenStream {
         },
         None => quote! {
         {
-            // Cette ligne est évaluée au moment de l’expansion macro
-            let _type_check = |input: _| {
-                let _ = input.clone(); // ← force T: Clone
-            };
-
-            hiveflow_core::core::pipeline::Pipeline::new(move |input| async move {
-                #futures_block
-            })
+            hiveflow_core::_type_inference_hint_parallel!(#futures_block);       
         }
 
             },

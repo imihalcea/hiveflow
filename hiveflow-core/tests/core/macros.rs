@@ -59,7 +59,8 @@ mod sequential_test {
     #[tokio::test]
     async fn test_sequential_macro_explicit_type() {
         let pipeline = sequential!(
-            i32 => Add(1), Add(2), Mul(3)
+            i32 =>
+            Add(1), Add(2), Mul(3)
         );
         let result: i32 = pipeline.run(0).await.unwrap();
         assert_eq!(result, 9);
@@ -182,5 +183,19 @@ mod flow_test{
 
         let result: Vec<i32> = pipeline.run(2).await.unwrap();
         assert_eq!(result, vec![196, 28]);
+    }
+
+    #[tokio::test]
+    async fn named_steps_flow() {
+        let pipeline = flow! {
+            i32
+                => Add(1) // étape nommée "step1"
+                => Add(2) // étape nommée "step2"
+                => [Mul(3), Mul(4)] // étape nommée "step3"
+                => Sum // étape nommée "step4"
+        };
+
+        let result = pipeline.run(2).await.unwrap();
+        assert_eq!(result, 28); // Étapes : 2 + 1 = 3 → +2 = 5 → [5*3, 5*4] = [15, 20] → sum = 35
     }
 }

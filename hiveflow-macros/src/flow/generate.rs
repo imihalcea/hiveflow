@@ -28,6 +28,7 @@ fn step_to_tokens(input_type: &Option<Type>, step: FlowStep) -> proc_macro2::Tok
             quote! {{
                 tracing::info!(target: "flow", "→ entering step: {}", #label_str);
                 #expr
+                tracing::info!(target: "flow", "← exiting step: {}", #label_str);
             }}
         }
 
