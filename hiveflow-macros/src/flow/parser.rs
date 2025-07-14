@@ -1,6 +1,6 @@
 use syn::{
-    parse::{Parse, ParseStream}, punctuated::Punctuated, token::Bracket, Expr, Ident,
-    LitStr,
+    parse::{Parse, ParseStream}, token::Bracket, Expr
+    ,
     Token,
     Type,
 };
@@ -33,20 +33,7 @@ impl Parse for FlowBlock {
         let mut steps = Vec::new();
 
         while !input.is_empty() {
-            let step = if input.peek(syn::token::Bracket) {
-                // Bloc parallèle : [ ... ]
-                let content;
-                syn::bracketed!(content in input);
-                let inner: Punctuated<FlowStep, Token![,]> =
-                    Punctuated::parse_terminated(&content)?;
-                FlowStep::Parallel(inner.into_iter().collect())
-            
-            } else {
-                // Étape simple
-                let expr: Expr = input.parse()?;
-                FlowStep::Single(expr)
-            };
-
+            let step:FlowStep = input.parse()?;
             steps.push(step);
 
             // Enchaînement par =>
