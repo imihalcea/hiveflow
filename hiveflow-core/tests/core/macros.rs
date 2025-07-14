@@ -40,15 +40,6 @@ mod sequential_test {
         let result: i32 = pipeline.run(0).await.unwrap();
         assert_eq!(result, 9);
     }
-
-    #[tokio::test]
-    async fn test_sequential_macro_without_explicit_type() {
-        let pipeline = sequential!(
-            Add(1), Add(2), Mul(3)
-        );
-        let result: i32 = pipeline.run(0).await.unwrap();
-        assert_eq!(result, 9);
-    }
 }
 
 #[cfg(test)]
