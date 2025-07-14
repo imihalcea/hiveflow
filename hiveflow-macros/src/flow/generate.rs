@@ -1,6 +1,6 @@
-use quote::{format_ident, quote, ToTokens};
-use syn::{Expr, Type};
 use crate::flow::parser::{FlowBlock, FlowStep};
+use quote::{quote};
+use syn::Type;
 
 pub fn generate_flow(flow: FlowBlock) -> proc_macro2::TokenStream {
     let FlowBlock { input_type, steps } = flow;

@@ -194,7 +194,7 @@ mod flow_test{
     //         => step("parallel" => [Mul(2), Mul(3)])
     //         => step("final" => Sum)
     // };
-    // 
+    //
     //     let result = pipeline.run(2).await.unwrap();
     //     assert_eq!(result, 28); // Étapes : 2 + 1 = 3 → +2 = 5 → [5*3, 5*4] = [15, 20] → sum = 35
     // }
