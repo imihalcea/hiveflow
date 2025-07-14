@@ -15,3 +15,9 @@ pub fn sequential(input: TokenStream) -> TokenStream {
     let parsed = parse_macro_input!(input as parser::SequentialBlock);
     generate::generate_sequential(parsed).into()
 }
+
+#[proc_macro]
+pub fn parallel(input: TokenStream) -> TokenStream {
+    let parsed = parse_macro_input!(input as parser::ParallelBlock);
+    generate::generate_parallel(parsed).into()
+}
