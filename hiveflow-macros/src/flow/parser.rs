@@ -14,7 +14,6 @@ pub struct FlowBlock {
 /// Représente une étape du flow : simple, nommée ou bloc parallèle
 pub enum FlowStep {
     Single(Expr),
-    Named(String, Expr),
     Parallel(Vec<FlowStep>),
 }
 
@@ -41,16 +40,7 @@ impl Parse for FlowBlock {
                 let inner: Punctuated<FlowStep, Token![,]> =
                     Punctuated::parse_terminated(&content)?;
                 FlowStep::Parallel(inner.into_iter().collect())
-            } else if input.peek(syn::Ident) && input.peek2(syn::token::Not) {
-                // Étape nommée : step!("label" => expr)
-                let _step_kw: syn::Ident = input.parse()?; // step
-                let _: syn::token::Not = input.parse()?; // !
-                let content;
-                syn::parenthesized!(content in input);
-                let label: syn::LitStr = content.parse()?;
-                let _: Token![=>] = content.parse()?;
-                let expr: Expr = content.parse()?;
-                FlowStep::Named(label.value(), expr)
+            
             } else {
                 // Étape simple
                 let expr: Expr = input.parse()?;
@@ -80,17 +70,6 @@ impl Parse for FlowStep {
             let inner =
                 syn::punctuated::Punctuated::<FlowStep, Token![,]>::parse_terminated(&content)?;
             Ok(FlowStep::Parallel(inner.into_iter().collect()))
-        } else if input.peek(Ident) && input.peek2(Token![!]) {
-            // Étape nommée : step!("label" => expr)
-            let _step_ident: Ident = input.parse()?; // "step"
-            let _: Token![!] = input.parse()?; // !
-            let content;
-            syn::parenthesized!(content in input);
-
-            let label: LitStr = content.parse()?;
-            let _: Token![=>] = content.parse()?;
-            let expr: Expr = content.parse()?;
-            Ok(FlowStep::Named(label.value(), expr))
         } else {
             // Étape simple
             let expr: Expr = input.parse()?;

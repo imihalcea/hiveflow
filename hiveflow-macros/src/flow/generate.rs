@@ -23,15 +23,6 @@ fn step_to_tokens(input_type: &Option<Type>, step: FlowStep) -> proc_macro2::Tok
     match step {
         FlowStep::Single(expr) => quote! { #expr },
 
-        FlowStep::Named(label, expr) => {
-            let label_str = syn::LitStr::new(&label, proc_macro2::Span::call_site());
-            quote! {{
-                tracing::info!(target: "flow", "→ entering step: {}", #label_str);
-                #expr
-                tracing::info!(target: "flow", "← exiting step: {}", #label_str);
-            }}
-        }
-
         FlowStep::Parallel(inner_steps) => {
             let substeps = inner_steps
                 .into_iter()
