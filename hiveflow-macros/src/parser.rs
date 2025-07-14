@@ -1,4 +1,6 @@
 use syn::{Expr, braced, parse::{Parse, ParseStream}, Result, Token};
+use syn::Type;
+use syn::token::Comma;
 use syn::punctuated::Punctuated;
 
 pub struct Flow {
@@ -40,19 +42,30 @@ impl Parse for Flow {
 
 
 pub struct SequentialBlock {
-    pub input_type: syn::Type,
+    pub input_type: Option<syn::Type>,
     pub steps: Vec<Expr>,
 }
 
 impl Parse for SequentialBlock {
-    fn parse(input: ParseStream) -> Result<Self> {
-        let input_type: syn::Type = input.parse()?;
-        let _: Token![=>] = input.parse()?;
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        // Est-ce qu’un type d’entrée est fourni ?
+        let lookahead = input.lookahead1();
+        let input_type = if lookahead.peek(syn::Ident) && input.peek2(Token![=>]) {
+            let ty: Type = input.parse()?;
+            let _: Token![=>] = input.parse()?;
+            Some(ty)
+        } else {
+            None
+        };
 
-        let steps = Punctuated::<Expr, Token![,]>::parse_terminated(input)?
+        // Liste des étapes (expressions)
+        let steps = Punctuated::<Expr, Comma>::parse_terminated(input)?
             .into_iter()
             .collect();
 
-        Ok(SequentialBlock { input_type, steps })
+        Ok(SequentialBlock {
+            input_type,
+            steps,
+        })
     }
 }

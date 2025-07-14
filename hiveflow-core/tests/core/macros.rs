@@ -34,9 +34,18 @@ mod sequential_test {
     use crate::core::macros::{Add, Mul};
 
     #[tokio::test]
-    async fn test_sequential_macro() {
+    async fn test_sequential_macro_explicit_type() {
         let pipeline = sequential!(
             i32 => Add(1), Add(2), Mul(3)
+        );
+        let result: i32 = pipeline.run(0).await.unwrap();
+        assert_eq!(result, 9);
+    }
+
+    #[tokio::test]
+    async fn test_sequential_macro_without_explicit_type() {
+        let pipeline = sequential!(
+            Add(1), Add(2), Mul(3)
         );
         let result: i32 = pipeline.run(0).await.unwrap();
         assert_eq!(result, 9);

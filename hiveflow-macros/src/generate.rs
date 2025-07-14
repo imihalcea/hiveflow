@@ -31,7 +31,7 @@ fn to_expr(step: FlowStep) -> proc_macro2::TokenStream {
 
 
 
-pub fn generate_sequential(block: SequentialBlock) -> TokenStream {
+pub fn generate_sequential(block: SequentialBlock) -> proc_macro2::TokenStream {
     let steps = block.steps;
     let input_type = block.input_type;
 
@@ -40,18 +40,29 @@ pub fn generate_sequential(block: SequentialBlock) -> TokenStream {
 
     for (i, step) in steps.iter().enumerate() {
         let var = format_ident!("r{}", i);
-        let line = quote! {
+        step_tokens.push(quote! {
             let #var = #step.run(#previous).await?;
-        };
-        step_tokens.push(line);
+        });
         previous = quote! { #var };
     }
 
-    quote! {
-        hiveflow_core::core::pipeline::Pipeline::new(move |input: #input_type| async move {
-            #(#step_tokens)*
-            Ok(#previous)
-        })
+    match input_type {
+        Some(ty) => {
+            quote! {
+                hiveflow_core::core::pipeline::Pipeline::new(move |input: #ty| async move {
+                    #(#step_tokens)*
+                    Ok(#previous)
+                })
+            }
+        }
+        None => {
+            quote! {
+                hiveflow_core::core::pipeline::Pipeline::new(move |input| async move {
+                    #(#step_tokens)*
+                    Ok(#previous)
+                })
+            }
+        }
     }
 }
 
