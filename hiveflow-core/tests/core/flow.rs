@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod flow_test{
-    use crate::core::dummy_tasks::{Add, Mul, Sum, Square, Flatten};
+    use crate::core::dummy_tasks::Fail;
+use crate::core::dummy_tasks::{Add, Mul, Sum, Square, Flatten};
     use hiveflow_core::core::task::Task;
     use hiveflow_macros::{flow};
 
@@ -76,6 +77,31 @@ mod flow_test{
         assert_eq!(result, vec![196, 28]);
     }
 
+    #[tokio::test]
+    async fn test_flow_with_error() {
+        
+        let pipeline = flow! {
+            i32 => Add(1) => Fail => Add(1)
+        };
+
+        let result = pipeline.run(1).await;
+        assert!(result.is_err());
+    }
+    
+    #[tokio::test]
+    async fn test_flow_with_error_in_parallel() {
+
+        let pipeline = flow! {
+            i32 
+            => Add(1) 
+            => [Add(4), Fail, Add(1)]
+        };
+
+        let result = pipeline.run(1).await;
+        assert!(result.is_err());
+    }
+    
+    
     //to do later
     // #[tokio::test]
     // async fn named_steps_flow() {
