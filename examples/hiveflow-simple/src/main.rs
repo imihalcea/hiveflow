@@ -1,5 +1,5 @@
 use hiveflow_core::core::task::Task;
-use hiveflow_macros::parallel;
+use hiveflow_macros::{flow};
 
 struct HttpGet(pub String);
 
@@ -48,14 +48,16 @@ type Unit = ();
 
 #[tokio::main]
 async fn main() {
-    let pipeline = parallel!(
-        Unit =>
-        HttpGet("https://www.rust-lang.org".to_string()),
-        HttpGet("https://httpbin.org/ip".to_string())
-    );
+    let pipeline = flow!{
+        Unit 
+        => [
+                HttpGet("https://www.rust-lang.org".to_string()),
+                HttpGet("https://httpbin.org/ip".to_string())
+           ]
+        => SummarizeMany
+        => Summarize
+    };
 
-    let result: Vec<String> = pipeline.run(()).await.unwrap();
-    for (i, body) in result.iter().enumerate() {
-        println!("Response {}:\n{}", i + 1, body);
-    }
+    let result: String = pipeline.run(()).await.unwrap();
+    println!("Final Summary: {}", result);
 }

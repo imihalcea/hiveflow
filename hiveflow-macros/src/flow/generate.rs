@@ -11,7 +11,7 @@ pub fn generate_flow(flow: FlowBlock) -> proc_macro2::TokenStream {
 
     match ty_clone {
         Some(ty) => quote! {
-            sequential!(#ty => #(#transformed_steps),*)
+            hiveflow_macros::sequential!(#ty => #(#transformed_steps),*)
         },
         None => quote! {
             _type_inference_hint!(#(#transformed_steps),*)
@@ -30,7 +30,7 @@ fn step_to_tokens(input_type: &Option<Type>, step: FlowStep) -> proc_macro2::Tok
 
             match input_type {
                 Some(ty) => quote! {
-                    parallel!(#ty => #(#substeps),*)
+                     hiveflow_macros::parallel!(#ty => #(#substeps),*)
                 },
                 None => quote! {
                     _type_inference_hint!(#(#substeps),*)

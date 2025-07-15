@@ -2,7 +2,7 @@
 mod flow_test{
     use crate::core::dummy_tasks::{Add, Mul, Sum, Square, Flatten};
     use hiveflow_core::core::task::Task;
-    use hiveflow_macros::{flow, sequential, parallel};
+    use hiveflow_macros::{flow};
 
     #[tokio::test]
     async fn test_flow_sequential_and_parallel() {
